@@ -16,27 +16,24 @@ Upload PGN files and ask questions about the games !
 
 ## Prerequisites
 
-- Python installed
-- Mistral API Key (you can generate one at [console.mistral.ai](https://console.mistral.ai))
+- Docker installed (recommended) **OR** Python 3.11+
+- Mistral API Key (generate one at [console.mistral.ai](https://console.mistral.ai))
 
-## Quick Start
+## Quick Start (Docker - Recommended)
 
-1. **Install dependencies:**
+1. **Clone the repository:**
    ```bash
-   pip install -r requirements.txt
+   git clone https://github.com/jesptri/mistral-chess.git
+   cd mistral-chess
    ```
 
-2. **Set your Mistral API key in a .env at the root directory of the project:**
+2. **Build and run with Docker:**
    ```bash
-   MISTRAL_API_KEY="your-api-key-here"
+   docker build -t mistral-chess-qa .
+   docker run -p 8000:8000 -e MISTRAL_API_KEY="your-api-key-here" mistral-chess-qa
    ```
 
-3. **Run the server:**
-   ```bash
-   uvicorn app.main:app --reload --port 8000
-   ```
-
-4. **Open your browser:**
+3. **Open your browser:**
    Navigate to [http://localhost:8000](http://localhost:8000)
 
 ## How It Works
@@ -75,16 +72,37 @@ The application uses an environment variable:
 
 - `MISTRAL_API_KEY`: Your Mistral API key (required)
 
+## Alternative: Local Development (Without Docker)
+
+If you prefer to run without Docker:
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/jesptri/mistral-chess.git
+   cd mistral-chess
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Set your Mistral API key in a .env file at the root:**
+   ```bash
+   MISTRAL_API_KEY="your-api-key-here"
+   ```
+
+4. **Run the server:**
+   ```bash
+   uvicorn app.main:app --reload --port 8000
+   ```
+
+5. **Open your browser:**
+   Navigate to [http://localhost:8000](http://localhost:8000)
+
 ## Development
 
-### Docker
-
-```bash
-docker build -t mistral-chess-qa .
-docker run -p 8000:8000 -e MISTRAL_API_KEY="your-key" mistral-chess-qa
-```
-
-### Makefile Command to run the server
+### Using Makefile
 
 ```bash
 make run
