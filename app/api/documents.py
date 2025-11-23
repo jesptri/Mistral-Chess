@@ -1,5 +1,5 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
-from app.core.simple_pgn_parser import index_pgn
+from app.core.pgn_parser import index_pgn
 import pathlib
 
 router = APIRouter()

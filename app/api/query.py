@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from app.models.schemas import QueryRequest, QueryResponse
-from app.core.simple_retrieval import answer_question
+from app.core.retrieval import answer_question
 
 router = APIRouter()
 

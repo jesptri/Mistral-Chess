@@ -1,6 +1,6 @@
 from mistralai import Mistral
 from app.core.settings import settings
-from app.core.simple_pgn_parser import STORE
+from app.core.pgn_parser import STORE
 
 client = Mistral(api_key=settings.mistral_api_key)
 
