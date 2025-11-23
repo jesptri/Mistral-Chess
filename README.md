@@ -96,14 +96,11 @@ If you prefer to run without Docker:
    ```bash
    uvicorn app.main:app --reload --port 8000
    ```
+   
+   Or simply use:
+   ```bash
+   make run
+   ```
 
 5. **Open your browser:**
    Navigate to [http://localhost:8000](http://localhost:8000)
-
-## Development
-
-### Using Makefile
-
-```bash
-make run
-```
