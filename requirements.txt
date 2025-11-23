@@ -1,0 +1,16 @@
+# Core dependencies
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
+python-multipart
+jinja2
+
+# Mistral AI (required for Q&A functionality)
+mistralai
+
+# Testing
+pytest
+
+# Optional
+requests

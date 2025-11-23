@@ -1,0 +1,12 @@
+__pycache__/
+.pytest_cache/
+.venv/
+.env
+/data/
+
+# Keep Mazzella-Espinoux.pgn but ignore other test files in demo_files
+app/demo_files/*
+!app/demo_files/Mazzella-Espinoux.pgn
+!app/demo_files/README.md
+
+Architecture.md

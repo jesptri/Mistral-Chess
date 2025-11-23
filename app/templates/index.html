@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mistral Chess</title>
+
+    <style>
+        :root {
+            --mistral-orange: #ff8a3d;
+            --mistral-orange-dark: #d46a22;
+            --bg-light: #faf7f4;
+            --text-dark: #222;
+            --text-muted: #666;
+            --radius: 4px;
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter, system-ui, sans-serif;
+            background: var(--bg-light);
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 780px;
+            margin: 0 auto;
+        }
+
+        /* HEADER */
+        header {
+            text-align: center;
+            margin-bottom: 2.2rem;
+        }
+
+        header h1 {
+            font-size: 2.1rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--mistral-orange), var(--mistral-orange-dark));
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.6px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-top: .3rem;
+        }
+
+        /* CARDS */
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 1.4rem;
+            border: 1px solid rgba(0,0,0,0.06);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        }
+
+        .card h2 {
+            font-size: 1.2rem;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        .step {
+            background: var(--mistral-orange);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 0;
+            font-size: .8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        /* FORMS */
+        label {
+            display: block;
+            font-size: .85rem;
+            margin-bottom: .4rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        input[type=file], input[type=text] {
+            width: 100%;
+            padding: 0.85rem;
+            border-radius: var(--radius);
+            font-size: .95rem;
+            border: 1.5px solid #e3e3e3;
+            background: #fff;
+            box-sizing: border-box;
+        }
+
+        input[type=file] {
+            border-style: dashed;
+            background: #fff8f1;
+        }
+
+        input[type=text]:focus {
+            outline: none;
+            border-color: var(--mistral-orange);
+        }
+
+        /* BUTTONS */
+        button {
+            width: 100%;
+            margin-top: .7rem;
+            padding: .8rem;
+            font-size: .95rem;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            background: linear-gradient(135deg, var(--mistral-orange), var(--mistral-orange-dark));
+            color: white;
+            font-weight: 600;
+        }
+
+        button.secondary {
+            background: #555;
+        }
+
+        button:disabled {
+            opacity: .55;
+        }
+
+        /* RESULT MESSAGES */
+        .result-message {
+            margin-top: .8rem;
+            padding: .8rem 1rem;
+            border-radius: var(--radius);
+            font-size: .9rem;
+            line-height: 1.45;
+        }
+
+        .success { background: #e8f7ec; border-left: 3px solid #42b45f; }
+        .error   { background: #fde8e8; border-left: 3px solid #d64545; }
+        .loading { background: #e6f1ff; border-left: 3px solid #3b82f6; }
+
+        /* FOOTER INFO */
+        .info-card {
+            background: #fff7f1;
+            border-left: 3px solid var(--mistral-orange);
+        }
+
+        .info-card ul {
+            margin: 0;
+            padding-left: 1rem;
+        }
+        .info-card li {
+            margin: .35rem 0;
+            color: var(--text-muted);
+        }
+
+        /* Spinner */
+        .spinner {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 3px solid rgba(255,255,255,0.35);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+            margin-right: .4rem;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <header>
+        <h1>Mistral Chess</h1>
+        <div class="subtitle">Lightweight chess analysis powered by Mistral AI</div>
+    </header>
+
+    <!-- UPLOAD CARD -->
+    <div class="card">
+        <h2><span class="step">1</span> Upload your game</h2>
+
+        <form id="uploadForm">
+            <label for="fileInput">Choose a PGN file</label>
+            <input type="file" id="fileInput" name="file" accept=".pgn,.txt" required>
+
+            <button id="uploadBtn">
+                <span id="uploadBtnText">Upload .pgn file</span>
+            </button>
+        </form>
+
+        <div style="text-align:center; margin:1rem 0; color:#aaa;">or</div>
+
+        <button id="demoBtn" class="secondary">
+            <span id="demoBtnText">Load demo PGN (which is one of my games!)</span>
+        </button>
+
+        <div id="uploadResult"></div>
+    </div>
+
+    <!-- QUERY CARD -->
+    <div class="card">
+        <h2><span class="step">2</span> Ask a question</h2>
+
+        <form id="qForm">
+            <label for="questionInput">Your question</label>
+            <input id="questionInput" type="text" required placeholder="e.g. Who was better after move 12?">
+
+            <button id="queryBtn">
+                <span id="queryBtnText">Ask</span>
+            </button>
+        </form>
+
+        <div id="queryResult"></div>
+    </div>
+
+    <!-- INFO CARD -->
+    <div class="card info-card">
+        <h2 style="font-size:1.05rem;">Notes</h2>
+        <ul>
+            <li>Demo PGN helps to understand the system quickly.</li>
+            <li>Standard PGNs from <a href="https://www.chess.com" target="_blank">Chess.com</a> and <a href="https://lichess.org" target="_blank">Lichess</a> work perfectly. You can also find files on the <a href="https://www.fide.com" target="_blank">FIDE</a> website.</li>
+            <li>Mistral AI powers the question–answer analysis.</li>
+            <li>Ask about moves, turning points, strategy, or the whole game.</li>
+        </ul>
+    </div>
+
+</div>
+
+<script>
+    /* UPLOAD HANDLER */
+    const uploadForm = document.getElementById("uploadForm");
+    const uploadBtn = document.getElementById("uploadBtn");
+    const uploadBtnText = document.getElementById("uploadBtnText");
+    const uploadResult = document.getElementById("uploadResult");
+
+    uploadForm.addEventListener("submit", async e => {
+        e.preventDefault();
+        uploadBtn.disabled = true;
+        uploadBtnText.innerHTML = '<span class="spinner"></span>Uploading...';
+        uploadResult.innerHTML = '<div class="result-message loading">Processing your file...</div>';
+
+        try {
+            const formData = new FormData(uploadForm);
+            const res = await fetch("/documents/", { method: "POST", body: formData });
+            const data = await res.json();
+
+            if (res.ok) {
+                uploadResult.innerHTML =
+                    `<div class="result-message success">
+                        ✓ File uploaded<br>
+                        <small>Document ID: ${data.document_id}</small>
+                    </div>`;
+                uploadForm.reset();
+            } else throw new Error(data.detail || "Upload failed");
+        } catch (err) {
+            uploadResult.innerHTML =
+                `<div class="result-message error">Error: ${err.message}</div>`;
+        }
+
+        uploadBtn.disabled = false;
+        uploadBtnText.textContent = "Upload & index";
+    });
+
+    /* DEMO FILE */
+    const demoBtn = document.getElementById("demoBtn");
+    const demoBtnText = document.getElementById("demoBtnText");
+
+    demoBtn.addEventListener("click", async () => {
+        demoBtn.disabled = true;
+        demoBtnText.innerHTML = '<span class="spinner"></span>Loading...';
+        uploadResult.innerHTML = '<div class="result-message loading">Processing demo...</div>';
+
+        try {
+            const res = await fetch("/documents/demo", { method: "POST" });
+            const data = await res.json();
+
+            if (res.ok) {
+                uploadResult.innerHTML =
+                    `<div class="result-message success">
+                        ✓ Demo game loaded<br>
+                    </div>`;
+            } else throw new Error(data.detail);
+        } catch (err) {
+            uploadResult.innerHTML =
+                `<div class="result-message error">Error: ${err.message}</div>`;
+        }
+
+        demoBtn.disabled = false;
+        demoBtnText.textContent = "Load demo PGN (which is one of my games!)";
+    });
+
+    /* QUERY HANDLER */
+    const qForm = document.getElementById("qForm");
+    const queryBtn = document.getElementById("queryBtn");
+    const queryBtnText = document.getElementById("queryBtnText");
+    const queryResult = document.getElementById("queryResult");
+
+    qForm.addEventListener("submit", async e => {
+        e.preventDefault();
+
+        queryBtn.disabled = true;
+        queryBtnText.innerHTML = '<span class="spinner"></span>Thinking...';
+        queryResult.innerHTML = '<div class="result-message loading">Analyzing…</div>';
+
+        try {
+            const question = document.getElementById("questionInput").value;
+            const res = await fetch("/query/query/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ question })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                const formatted = data.answer
+                    .replace(/\n/g, "<br>")
+                    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+
+                const cls = data.answer.includes("⚠️") ? "loading" : "success";
+
+                queryResult.innerHTML =
+                    `<div class="result-message ${cls}">${formatted}</div>`;
+            } else {
+                throw new Error(data.detail);
+            }
+        } catch (err) {
+            queryResult.innerHTML =
+                `<div class="result-message error">Error: ${err.message}</div>`;
+        }
+
+        queryBtn.disabled = false;
+        queryBtnText.textContent = "Ask";
+    });
+</script>
+
+</body>
+</html>
