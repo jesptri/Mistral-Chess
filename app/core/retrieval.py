@@ -56,7 +56,5 @@ def answer_question(question: str) -> str:
         )
         return response.choices[0].message.content
     except Exception as e:
-        if "api_key" in str(e).lower():
-            return f"Mistral API key not configured. Please set MISTRAL_API_KEY environment variable.\n\nContext available:\n{full_context}"
         return f"Error calling Mistral API: {str(e)}\n\nRaw context:\n{full_context}"
 
